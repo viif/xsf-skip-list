@@ -1,12 +1,17 @@
-#include <cmath>
-#include <cstdlib>  // 随机函数
-#include <cstring>
-#include <fstream>  // 引入文件操作
-#include <iostream>
-#include <mutex>  // 引入互斥锁
+#ifndef XSF_SKIP_LIST_H
+#define XSF_SKIP_LIST_H
 
-#define STORE_FILE "store/dumpFile"  // 存储文件路径
-std::mutex mtx;                      // 定义互斥锁
+#include <cmath>
+#include <cstdlib>
+#include <cstring>
+#include <fstream>
+#include <iostream>
+#include <mutex>
+
+namespace xsf_skip_list {
+
+#define STORE_FILE "store/dumpFile"
+std::mutex mtx;
 
 template <typename K, typename V>
 class Node {
@@ -381,3 +386,7 @@ template <typename K, typename V>
 int SkipList<K, V>::size() {
     return element_count_;
 }
+
+}  // namespace xsf_skip_list
+
+#endif  // XSF_SKIP_LIST_H
