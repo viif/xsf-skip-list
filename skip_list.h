@@ -16,11 +16,8 @@ struct Node {
     Node(const K& key, const V& value, uint8_t level)
         : key_(key), value_(value), forward_(level + 1) {}
 
-    Node(Node&&) noexcept = default;
-    Node& operator=(Node&&) noexcept = default;
     Node(const Node&) = delete;
     Node& operator=(const Node&) = delete;
-    ~Node() = default;
 
     K key_;
     V value_;
@@ -37,11 +34,8 @@ class SkipList {
           gen_(seed),
           distribution_(0.5) {}
 
-    ~SkipList() = default;
     SkipList(const SkipList&) = delete;
     SkipList& operator=(const SkipList&) = delete;
-    SkipList(SkipList&&) noexcept = default;
-    SkipList& operator=(SkipList&&) noexcept = default;
 
     void put(const K& key, const V& value) {
         std::lock_guard<std::mutex> lock(mutex_);
