@@ -12,24 +12,23 @@ struct Node {
    public:
     Node() = default;
 
-    Node(K key, V value, int level)
+    Node(K key, V value, uint8_t level)
         : key_(key), value_(value), node_level_(level) {
-        forward_ = new Node<K, V>*[level + 1];
-        memset(forward_, 0, sizeof(Node<K, V>*) * (level + 1));
+        forward_ = new Node<K, V>*[level + 1]();
     }
 
     ~Node() { delete[] forward_; }
 
     K key_;
     V value_;
-    Node<K, V>** forward_;
-    int node_level_;
+    Node<K, V>** forward_{nullptr};
+    uint8_t node_level_{0};
 };
 
 template <typename K, typename V>
 class XSFSkipList {
    public:
-    XSFSkipList(int max_level, unsigned int seed = std::random_device{}())
+    XSFSkipList(uint8_t max_level, unsigned int seed = std::random_device{}())
         : max_level_(max_level),
           skip_list_level_(0),
           element_count_(0),
@@ -79,11 +78,11 @@ class XSFSkipList {
         } else {
             // 键不存在，插入节点
             // 通过随机函数决定新节点的层级高度
-            int new_node_level = get_random_level();
+            uint8_t new_node_level = get_random_level();
             // 如果新节点的层级超出了跳表的当前最高层级
             if (new_node_level > skip_list_level_) {
                 // 对所有新的更高层级，将头节点设置为它们的前驱节点
-                for (int i = skip_list_level_ + 1; i < new_node_level + 1;
+                for (uint8_t i = skip_list_level_ + 1; i < new_node_level + 1;
                      i++) {
                     update[i] = header_;
                 }
@@ -93,7 +92,7 @@ class XSFSkipList {
             // 创建新节点
             Node<K, V>* new_node = create_node(key, value, new_node_level);
             // 在各层插入新节点，同时更新前驱节点的forward指针
-            for (int i = 0; i <= new_node_level; i++) {
+            for (uint8_t i = 0; i <= new_node_level; i++) {
                 // 新节点指向当前节点的下一个节点
                 new_node->forward_[i] = update[i]->forward_[i];
                 // 当前节点的下一个节点更新为新节点
@@ -149,7 +148,7 @@ class XSFSkipList {
         // 确认找到了待删除的节点
         if (current != nullptr && current->key_ == key) {
             // 逐层更新指针，移除节点
-            for (int i = 0; i <= skip_list_level_; i++) {
+            for (uint8_t i = 0; i <= skip_list_level_; i++) {
                 // 如果当前层的前驱节点指向待删除节点
                 if (update[i]->forward_[i] == current) {
                     // 将前驱节点的指针指向待删除节点的下一个节点
@@ -171,9 +170,9 @@ class XSFSkipList {
     size_t size() { return element_count_; }
 
    private:
-    int get_random_level() {
+    uint8_t get_random_level() {
         // 初始化层级：每个节点至少出现在第一层
-        int k = 0;
+        uint8_t k = 0;
         // 随机层级增加：使用 rand() % 2 实现抛硬币效果，决定是否升层
         // 层级限制：确保节点层级不超过最大值 max_level_
         while (distribution_(gen_) && k < max_level_) {
@@ -183,7 +182,7 @@ class XSFSkipList {
         return k;
     }
 
-    Node<K, V>* create_node(K key, V value, int level) {
+    Node<K, V>* create_node(K key, V value, uint8_t level) {
         // 实例化新节点，并为其分配指定的键、值和层级
         Node<K, V>* new_node = new Node<K, V>(key, value, level);
         // 返回新节点：返回新节点指针
